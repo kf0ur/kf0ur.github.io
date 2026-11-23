@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZXProjects</title>
+<style>
+  :root {
+    --bg: #07060a;
+    --panel: rgba(24, 18, 30, .55);
+    --line: rgba(255, 255, 255, .08);
+    --blood: #8b1a2b;
+    --glow: #c02843;
+    --silver: #e6e1ec;
+    --muted: #8d8596;
+    --violet: #3a1f4d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                 "Helvetica Neue", "Inter", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: var(--bg);
+    color: var(--silver);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Фоновые светящиеся шары */
+  .orb {
+    position: fixed; border-radius: 50%;
+    filter: blur(120px); opacity: .45; z-index: -1;
+    animation: float 18s ease-in-out infinite alternate;
+  }
+  .orb.a { width: 480px; height: 480px; background: var(--blood); top: -120px; left: -120px; }
+  .orb.b { width: 520px; height: 520px; background: var(--violet); bottom: -160px; right: -140px; animation-delay: -6s; }
+  @keyframes float { to { transform: translate(60px, 80px) scale(1.15); } }
+
+  /* Навигация */
+  nav {
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 6px; padding: 8px 10px;
+    background: rgba(15, 11, 20, .6);
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid var(--line);
+    border-radius: 999px; z-index: 10;
+  }
+  nav a {
+    color: var(--muted); text-decoration: none; font-size: .9rem;
+    padding: 8px 16px; border-radius: 999px; transition: .3s;
+  }
+  nav a:hover { color: #fff; background: rgba(192, 40, 67, .25); }
+
+  section { max-width: 1050px; margin: 0 auto; padding: 110px 24px; }
+
+  /* Главный экран */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center;
+  }
+  .cross { color: var(--glow); font-size: 1.6rem; margin-bottom: 18px; text-shadow: 0 0 20px var(--glow); }
+  h1 {
+    font-size: clamp(3.2rem, 11vw, 8rem);
+    font-weight: 700; letter-spacing: -.04em; line-height: 1;
+    background: linear-gradient(180deg, #fff 20%, #8d8596 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    filter: drop-shadow(0 0 30px rgba(192, 40, 67, .35));
+  }
+  h1 span { color: var(--glow); -webkit-text-fill-color: var(--glow); }
+  .tagline { margin-top: 20px; color: var(--muted); font-size: 1.2rem; font-weight: 300; letter-spacing: .08em; }
+  .scroll { margin-top: 60px; color: var(--muted); font-size: .8rem; letter-spacing: .3em; text-transform: uppercase; animation: pulse 2.4s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+
+  .label {
+    font-size: .8rem; letter-spacing: .3em; text-transform: uppercase;
+    color: var(--glow); margin-bottom: 12px;
+  }
+  h2 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 600; letter-spacing: -.02em; margin-bottom: 40px; }
+
+  /* Карточки */
+  .glass {
+    background: var(--panel);
+    backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--line);
+    border-radius: 28px; padding: 36px;
+    transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s, border-color .5s;
+  }
+  .glass:hover {
+    transform: translateY(-6px);
+    border-color: rgba(192, 40, 67, .45);
+    box-shadow: 0 20px 60px -20px var(--blood);
+  }
+
+  /* Главный проект */
+  .main-project {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 30px; flex-wrap: wrap;
+    background:
+      radial-gradient(circle at 90% 10%, rgba(192, 40, 67, .25), transparent 50%),
+      var(--panel);
+  }
+  .main-project h3 { font-size: 2.6rem; letter-spacing: -.03em; }
+  .main-project p { color: var(--muted); margin-top: 8px; max-width: 460px; }
+  .badge {
+    display: inline-block; padding: 6px 14px; margin-bottom: 14px;
+    border: 1px solid rgba(192, 40, 67, .5); border-radius: 999px;
+    font-size: .8rem; color: #f0a5b2; background: rgba(192, 40, 67, .1);
+  }
+  .year { font-size: 4.5rem; font-weight: 700; letter-spacing: -.05em; color: rgba(255, 255, 255, .08); }
+
+  /* Закрытые проекты */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; }
+  .closed h3 { font-size: 1.6rem; letter-spacing: -.02em; margin: 14px 0 6px; }
+  .closed p { color: var(--muted); font-size: .95rem; }
+  .lock {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: grid; place-items: center; font-size: 1.2rem;
+    background: rgba(192, 40, 67, .12); border: 1px solid rgba(192, 40, 67, .3);
+  }
+  .tag { margin-top: 18px; font-size: .75rem; letter-spacing: .2em; text-transform: uppercase; color: #6f6676; }
+
+  /* Команда */
+  .avatar {
+    width: 64px; height: 64px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 1.6rem; font-weight: 600;
+    background: linear-gradient(135deg, var(--blood), var(--violet));
+    box-shadow: 0 0 30px -5px var(--glow); margin-bottom: 18px;
+  }
+  .team h3 { font-size: 1.5rem; letter-spacing: -.02em; }
+  .role { color: var(--glow); font-size: .9rem; margin: 4px 0 10px; }
+  .team p { color: var(--muted); font-size: .95rem; }
+
+  footer { text-align: center; padding: 50px 20px 28px; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; }
+  .signature { margin-top: 30px; font-size: .62rem; color: rgba(141, 133, 150, .28); letter-spacing: .05em; }
+
+  /* Появление при скролле */
+  .reveal { opacity: 0; transform: translateY(30px); transition: 1s cubic-bezier(.2,.8,.2,1); }
+  .reveal.show { opacity: 1; transform: none; }
+
+  ::selection { background: var(--blood); color: #fff; }
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-thumb { background: var(--blood); border-radius: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+
+/* Аватарка с картинкой */
+  .avatar.img {
+    padding: 0; overflow: hidden;
+    border: 2px solid rgba(192, 40, 67, .6);
+  }
+  .avatar.img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+  /* Discord кнопки */
+  nav a.discord-nav {
+    color: #fff; background: rgba(88, 101, 242, .25);
+  }
+  nav a.discord-nav:hover { background: rgba(88, 101, 242, .5); }
+
+  .discord-btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    margin-top: 36px; padding: 14px 28px;
+    color: #fff; text-decoration: none; font-weight: 500;
+    background: linear-gradient(135deg, #5865f2, #3a1f4d);
+    border: 1px solid rgba(255, 255, 255, .15);
+    border-radius: 999px;
+    box-shadow: 0 10px 40px -10px #5865f2;
+    transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s;
+  }
+  .discord-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 16px 50px -8px #5865f2; }
+  .discord-btn svg { width: 22px; height: 22px; fill: currentColor; }
+
+  .discord-card {
+    text-align: center;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(88, 101, 242, .28), transparent 60%),
+      var(--panel);
+  }
+  .discord-card h2 { margin-bottom: 14px; }
+  .discord-card p { color: var(--muted); max-width: 480px; margin: 0 auto; }
+
+
+  @media (max-width: 600px) {
+    nav a { padding: 8px 10px; font-size: .8rem; }
+    .year { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="orb a"></div>
+<div class="orb b"></div>
+
+<nav>
+  <a href="#home">Главная</a>
+  <a href="#projects">Проекты</a>
+  <a href="#closed">Закрытые</a>
+  <a href="#team">Команда</a>
+  <a class="discord-nav" href="https://discord.gg/Rmawkv8qPr" target="_blank" rel="noopener">Discord</a>
+</nav>
+
+
+<section class="hero" id="home">
+  <div class="cross">✠</div>
+  <h1>ZX<span>Projects</span></h1>
+<p class="tagline">Миры, рождённые во тьме</p>
+  <a class="discord-btn" href="https://discord.gg/Rmawkv8qPr" target="_blank" rel="noopener">
+    <svg viewBox="0 0 24 24"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.25.5a18.3 18.3 0 0 0-6.3 0L8.6 3A19.7 19.7 0 0 0 3.7 4.4C.6 9 -.2 13.5.2 17.9a19.9 19.9 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.2 14.2 0 0 0 12 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.100-.8-9.600-3.500-13.500zM8.500 15.200c-1.200 0-2.100-1.100-2.100-2.400s.9-2.400 2.100-2.400 2.200 1.100 2.100 2.400c0 1.300-.9 2.400-2.100 2.400zm7 0c-1.200 0-2.100-1.100-2.100-2.400s.9-2.400 2.100-2.400 2.200 1.100 2.100 2.400c0 1.300-.9 2.400-2.100 2.400z"/></svg>
+    Присоединиться к Discord
+  </a>
+  <div class="scroll">листай вниз</div>
+</section>
+
+<section id="projects">
+  <div class="label reveal">Главный проект</div>
+  <h2 class="reveal">Наш основной мир</h2>
+  <div class="glass main-project reveal">
+    <div>
+      <span class="badge">● Скоро..</span>
+      <h3>ZXRP 3.0</h3>
+      <p>Ролевой Minecraft-сервер с глубокой атмосферой и живым сообществом. Работает с 2022 года и продолжает развиваться.</p>
+    </div>
+    <div class="year">2022</div>
+  </div>
+</section>
+
+<section id="closed">
+  <div class="label reveal">Архив</div>
+  <h2 class="reveal">Закрытые проекты</h2>
+  <div class="grid">
+    <div class="glass closed reveal">
+      <div class="lock">🔒</div>
+      <h3>ZXHvH</h3>
+      <p>Жаркие сражения и борьба за превосходство.</p>
+      <div class="tag">Закрыт</div>
+    </div>
+    <div class="glass closed reveal">
+      <div class="lock">🔒</div>
+      <h3>ZXAnarchy</h3>
+      <p>Мир без правил, где выживает сильнейший.</p>
+      <div class="tag">Закрыт</div>
+    </div>
+    <div class="glass closed reveal">
+      <div class="lock">🔒</div>
+      <h3>ZXGrief</h3>
+      <p>Хаос, разрушение и свобода действий.</p>
+      <div class="tag">Закрыт</div>
+    </div>
+  </div>
+</section>
+
+<section id="team">
+  <div class="label reveal">Создатели</div>
+  <h2 class="reveal">Команда</h2>
+  <div class="grid">
+    <div class="glass team reveal">
+      <div class="avatar img"><img src="kasper.jpg" alt="kaspersky1337"></div>
+      <h3>kaspersky1337</h3>
+      <div class="role">Разработчик</div>
+      <p>Разрабатывает Minecraft-серверы с 2021 года.</p>
+    </div>
+    <div class="glass team reveal">
+      <div class="avatar">Y</div>
+      <h3>Y000000000</h3>
+      <div class="role">Совладелец</div>
+      <p>Помогает вести проекты и развивать общее дело.</p>
+    </div>
+  </div>
+</section>
+<section id="discord">
+  <div class="glass discord-card reveal">
+    <div class="label">Сообщество</div>
+    <h2>Заходи к нам в Discord</h2>
+    <p>Новости, общение, поддержка и все обновления ZXRP 3.0 — в одном месте.</p>
+    <a class="discord-btn" href="https://discord.gg/Rmawkv8qPr" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24"><path d="M20.3 4.4A19.8 19.8 0 0 0 15.4 3l-.25.5a18.3 18.3 0 0 0-6.3 0L8.6 3A19.7 19.7 0 0 0 3.7 4.4C.6 9 -.2 13.5.2 17.9a19.9 19.9 0 0 0 6 3l1.3-2.1c-.7-.3-1.4-.6-2-1l.5-.4a14.2 14.2 0 0 0 12 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.8 19.8 0 0 0 6-3c.5-5.100-.8-9.600-3.500-13.500zM8.500 15.200c-1.200 0-2.100-1.100-2.100-2.400s.9-2.400 2.100-2.400 2.200 1.100 2.100 2.400c0 1.300-.9 2.400-2.100 2.400zm7 0c-1.200 0-2.100-1.100-2.100-2.400s.9-2.400 2.100-2.400 2.200 1.100 2.100 2.400c0 1.300-.9 2.400-2.100 2.400z"/></svg>
+      Войти на сервер
+    </a>
+  </div>
+</section>
+
+<footer>
+  © ZXProjects · 2021 — <span id="y"></span>
+  <div class="signature">made by Claude Max and блядские промпты каспера</div>
+</footer>
+
+<script>
+  document.getElementById('y').textContent = new Date().getFullYear();
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('show');
+  }), { threshold: .15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
